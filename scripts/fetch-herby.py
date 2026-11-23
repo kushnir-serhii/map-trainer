@@ -33,7 +33,7 @@ FILES = {
 
 cid = sys.argv[1] if len(sys.argv) > 1 else 'pl'
 IDS = FILES[cid]
-UA = {'User-Agent': 'map-trainer-build/1.0'}
+UA = {'User-Agent': 'map-trainer-build/1.0 (educational map quiz; https://www.mediawiki.org/wiki/API:Etiquette) python-urllib'}
 DST = os.path.join(os.path.dirname(__file__), '..', 'data', 'herby', cid)
 os.makedirs(DST, exist_ok=True)
 
