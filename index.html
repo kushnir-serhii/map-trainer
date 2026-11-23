@@ -1,43 +1,44 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="pl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Map Trainer</title>
-<meta name="description" content="Тренажер для вивчення регіонів країн та їхніх головних міст на інтерактивній мапі.">
+<meta name="description" content="Trener do nauki regionów krajów i ich stolic na interaktywnej mapie.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14.5' fill='%232563eb'/%3E%3Cpath d='M9 7.5c2.5.5 3 2.5 5 2.5s2 2.5 0 3.5-4 .5-4.5 3 1.5 3 1 5.5-2 2.5-3 2.5A13 13 0 0 1 4.5 11zM19 4.5c-1 1.5.5 3 2 3s2.5 1.5 2 3 1 2.5 2.5 2 2.5.5 2.5.5a13 13 0 0 0-9-8.5zM18 17c1.5-.5 3.5 0 4.5 1.5s0 3.5-1 5-1 3-3 3.5-2-1.5-1.5-3.5-.5-2 -.5-3.5 .5-2.5 1.5-3z' fill='%234cc27a'/%3E%3Ccircle cx='16' cy='16' r='14.5' fill='none' stroke='%2316181b' stroke-opacity='.35'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header><div class="brand"><h1><span id="title">Map Trainer</span><span id="flag" aria-hidden="true"></span></h1><select id="country" aria-label="Країна" hidden></select></div>
-<nav class="tabs" id="tabs" aria-label="Режим">
-<button data-m="explore" aria-pressed="true">Огляд</button>
-<button data-m="guess" aria-pressed="false">Назви регіон</button>
-<button data-m="find" aria-pressed="false">Знайди на мапі</button>
-<button data-m="city" aria-pressed="false">Місто → регіон</button>
+<header><div class="brand"><h1><span id="title">Map Trainer</span><span id="flag" aria-hidden="true"></span></h1><select id="country" data-i-aria="country" hidden></select>
+<div class="lang" id="lang" role="group" data-i-aria="lang"><button data-l="pl" aria-pressed="true" lang="pl">PL</button><button data-l="uk" aria-pressed="false" lang="uk">UA</button></div></div>
+<nav class="tabs" id="tabs" data-i-aria="mode">
+<button data-m="explore" aria-pressed="true" data-i="explore"></button>
+<button data-m="guess" aria-pressed="false"></button>
+<button data-m="find" aria-pressed="false" data-i="find"></button>
+<button data-m="city" aria-pressed="false"></button>
 </nav></header>
 <main>
 <div class="card" id="panel" aria-live="polite"></div>
 <div class="mapbox">
-<svg id="map" role="img" aria-label="Інтерактивна мапа"></svg>
-<div class="zoom"><button id="zin" aria-label="Наблизити">+</button><button id="zout" aria-label="Віддалити">−</button><button id="zreset" aria-label="Скинути масштаб" style="font-size:15px">⤢</button></div>
-<div class="legend" aria-hidden="true"><span><i class="lk-sel"></i>питання / вибрано</span><span><i class="lk-ok"></i>вивчено / правильно</span><span><i class="lk-part"></i>вивчається</span><span><i class="lk-bad"></i>помилка</span></div>
+<svg id="map" role="img" data-i-aria="map"></svg>
+<div class="zoom"><button id="zin" data-i-aria="zin">+</button><button id="zout" data-i-aria="zout">−</button><button id="zreset" data-i-aria="zreset" style="font-size:15px">⤢</button></div>
+<div class="legend" aria-hidden="true"><span><i class="lk-sel"></i><em data-i="lgSel"></em></span><span><i class="lk-ok"></i><em data-i="lgOk"></em></span><span><i class="lk-part"></i><em data-i="lgPart"></em></span><span><i class="lk-bad"></i><em data-i="lgBad"></em></span></div>
 </div>
 <aside>
 <div class="card">
-<div class="stats"><div><b id="sOk">0</b><span>правильно</span></div><div><b id="sAll">0</b><span>спроб</span></div><div><b id="sKnown">0/16</b><span>вивчено</span></div></div>
-<div class="barhead"><span>Прогрес</span><span id="sPct">0%</span></div>
-<div class="bar" id="sBarWrap" role="progressbar" aria-label="Прогрес вивчення" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="sBar"></i></div>
-<p class="hint">Воєводство вважається вивченим після 2 правильних відповідей поспіль.</p>
-<p class="weak" id="weak">Помилок ще не було.</p>
+<div class="stats"><div><b id="sOk">0</b><span data-i="sOk"></span></div><div><b id="sAll">0</b><span data-i="sAll"></span></div><div><b id="sKnown">0/16</b><span data-i="sKnown"></span></div></div>
+<div class="barhead"><span data-i="progress"></span><span id="sPct">0%</span></div>
+<div class="bar" id="sBarWrap" role="progressbar" data-i-aria="progressAria" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="sBar"></i></div>
+<p class="hint" id="hint"></p>
+<p class="weak" id="weak"></p>
 <div class="row" style="justify-content:space-between;align-items:center">
-<label class="tog"><input type="checkbox" id="labels"> Підписи на мапі</label>
-<button class="btn sm danger" id="resetP">Очистити прогрес</button></div>
-<div class="confirm" id="resetBox" hidden><span>Видалити всі відповіді та прогрес? Це не можна скасувати.</span><div class="row"><button class="btn sm dangerf" id="resetYes">Так, очистити</button><button class="btn sm" id="resetNo">Скасувати</button></div></div>
+<label class="tog"><input type="checkbox" id="labels"> <span data-i="labels"></span></label>
+<button class="btn sm danger" id="resetP" data-i="reset"></button></div>
+<div class="confirm" id="resetBox" hidden><span data-i="resetQ"></span><div class="row"><button class="btn sm dangerf" id="resetYes" data-i="resetYes"></button><button class="btn sm" id="resetNo" data-i="cancel"></button></div></div>
 </div>
-<p class="note">Колесо миші чи два пальці — масштаб, перетягування — рух мапи. Прогрес зберігається в цьому браузері.</p>
+<p class="note" data-i="note"></p>
 </aside>
 </main>
 <script src="js/app.js"></script>

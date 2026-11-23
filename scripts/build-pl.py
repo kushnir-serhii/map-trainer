@@ -28,9 +28,9 @@ meta={
 'lubelskie':('lubelskie','Люблінське'),'lubuskie':('lubuskie','Любуське')}
 caps={
 'dolnoslaskie':[('Вроцлав','Wrocław',51.107,17.038,'')],
-'kujawsko':[('Бидгощ','Bydgoszcz',53.123,18.008,'воєвода'),('Торунь','Toruń',53.013,18.598,'сеймик')],
+'kujawsko':[('Бидгощ','Bydgoszcz',53.123,18.008,'voivode'),('Торунь','Toruń',53.013,18.598,'sejmik')],
 'lubelskie':[('Люблін','Lublin',51.246,22.568,'')],
-'lubuskie':[('Гожув-Великопольський','Gorzów Wielkopolski',52.730,15.238,'воєвода'),('Зелена Гура','Zielona Góra',51.935,15.506,'сеймик')],
+'lubuskie':[('Гожув-Великопольський','Gorzów Wielkopolski',52.730,15.238,'voivode'),('Зелена Гура','Zielona Góra',51.935,15.506,'sejmik')],
 'lodzkie':[('Лодзь','Łódź',51.759,19.456,'')],
 'malopolskie':[('Краків','Kraków',50.065,19.945,'')],
 'mazowieckie':[('Варшава','Warszawa',52.230,21.012,'')],
@@ -65,9 +65,12 @@ for f in d['features']:
         x,y=P(lon,lat);cl.append({'ua':cua,'pl':cpl,'x':round(x,1),'y':round(y,1),'seat':seat})
     cl=[{'name':c['ua'],'local':c['pl'],'x':c['x'],'y':c['y'],'seat':c['seat']} for c in cl]
     out.append({'id':rid,'name':ua,'local':pl,'caps':cl,'lx':round(cx+nx,1),'ly':round(cy+ny,1),'d':path})
-data={'id':'pl','name':'Польща','lang':'pl-PL','w':1000,'h':round(H,1),
- 'text':{'title':'Воєводства Польщі','unit':'воєводство','Unit':'Воєводство','units':'воєводства',
-         'center':'Головне місто','say':'województwo','sayLabel':'Вимова польською'},
+data={'id':'pl','name':{'uk':'Польща','pl':'Polska'},'lang':'pl-PL','w':1000,'h':round(H,1),'say':'województwo',
+ # UI wording per interface language; seat keys ('voivode'/'sejmik') are translated via 'seats'
+ 'text':{'uk':{'title':'Воєводства Польщі','unit':'воєводство','Unit':'Воєводство','center':'Головне місто',
+               'sayLabel':'Вимова польською','seats':{'voivode':'воєвода','sejmik':'сеймик'}},
+         'pl':{'title':'Województwa Polski','unit':'województwo','Unit':'Województwo','center':'Stolica',
+               'sayLabel':'Wymowa','seats':{'voivode':'wojewoda','sejmik':'sejmik'}}},
  'regions':out}
 dst=os.path.join(os.path.dirname(__file__),'..','data','pl.json')
 open(dst,'w',encoding='utf-8').write(json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('},{"id"','},\n{"id"'))

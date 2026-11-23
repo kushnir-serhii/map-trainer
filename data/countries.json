@@ -1,7 +1,10 @@
 [
   {
     "id": "pl",
-    "name": "Польща",
+    "name": {
+      "pl": "Polska",
+      "uk": "Польща"
+    },
     "flag": [
       "#ffffff",
       "#dc143c"

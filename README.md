@@ -1,12 +1,12 @@
 # Map Trainer
 
-Interactive trainer for learning a country's regions and their capitals on a zoomable map. The first dataset covers the 16 voivodeships of Poland. The UI is in Ukrainian.
+Interactive trainer for learning a country's regions and their capitals on a zoomable map. The first dataset covers the 16 voivodeships of Poland. The interface is in Polish by default; a **PL / UA** switch in the header changes it to Ukrainian (the choice is remembered in the browser). In the Ukrainian interface the Polish original is shown next to each name.
 
 **Live:** `https://<username>.github.io/map-trainer/`
 
 ## Modes
 
-- **Огляд** — hover or tap a region to see its name (Ukrainian + local) and capital.
+- **Огляд** — hover or tap a region to see its name and capital.
 - **Назви регіон** — a region is highlighted; pick its name and capital from two selects.
 - **Знайди на мапі** — you get a region name, click it on the map.
 - **Місто → регіон** — a city is marked on the map, click the region it is the capital of.
@@ -36,17 +36,17 @@ No build step. `.nojekyll` makes Pages serve the files as they are.
 ```
 index.html            page shell
 css/style.css         styles (light + dark)
-js/app.js             map, zoom, quiz modes, progress
+js/app.js             map, zoom, quiz modes, progress, UI strings (PL/UK)
 data/countries.json   list of available countries
-data/pl.json          Poland: regions, SVG paths, capitals, UI wording
+data/pl.json          Poland: regions, SVG paths, capitals, UI wording per language
 scripts/build-pl.py   rebuilds data/pl.json from GeoJSON
 ```
 
 ## Adding a country
 
 1. Get a GeoJSON of the country's regions.
-2. Copy `scripts/build-pl.py`, adapt names, capitals (lat/lon) and the `text` block, and generate `data/<id>.json`. The capital list for each region can have more than one city (as in Kujawsko-Pomorskie and Lubuskie).
-3. Add `{ "id": "<id>", "name": "...", "flag": ["#top", "#bottom"] }` to `data/countries.json`.
+2. Copy `scripts/build-pl.py`, adapt names, capitals (lat/lon) and the `text` block (one entry per interface language: `pl`, `uk`), and generate `data/<id>.json`. The capital list for each region can have more than one city (as in Kujawsko-Pomorskie and Lubuskie).
+3. Add `{ "id": "<id>", "name": {"pl": "...", "uk": "..."}, "flag": ["#top", "#bottom"] }` to `data/countries.json`.
 
 With more than one country, a country selector appears in the header. Each country is reachable at `#<id>` (for example `#pl`).
 

@@ -95,3 +95,10 @@ main{grid-template-columns:minmax(0,1fr) clamp(320px,28vw,400px);grid-template-a
 .mapbox{height:calc(100dvh - 110px);min-height:480px;max-height:none}
 .form{grid-template-columns:minmax(0,1fr)}.form .row .btn{flex:1}
 }
+.legend em{font-style:normal}
+/* interface language switch (PL / UA) */
+.lang{display:inline-flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.lang button{font:600 13px Inter,sans-serif;min-height:36px;min-width:44px;padding:0 10px;border:0;background:var(--card);color:var(--mute);cursor:pointer}
+.lang button+button{border-left:1px solid var(--bd)}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+@media(hover:hover){.lang button[aria-pressed=false]:hover{color:var(--ink)}}
