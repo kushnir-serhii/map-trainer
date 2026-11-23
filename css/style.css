@@ -30,7 +30,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"q" "m
 #map.drag{cursor:grabbing}
 .reg{fill:var(--land);stroke:var(--line);stroke-width:1.6;vector-effect:non-scaling-stroke;cursor:pointer;transition:fill .18s}
 @media(hover:hover){.reg:hover{fill:var(--hov)}}
-.reg.part{fill:color-mix(in srgb,var(--ok) 45%,var(--land))}
+.reg.part{fill:color-mix(in srgb,var(--ok) 25%,var(--land))}
 .reg.sel{fill:var(--sel);stroke:var(--acc);stroke-width:2.5}.reg.ok{fill:var(--ok)}.reg.bad{fill:var(--bad)}
 .reg.now.ok{stroke:var(--okd);stroke-width:2.5}.reg.now.bad{stroke:var(--badd);stroke-width:2.5}
 .lab{font-family:Archivo,Inter,sans-serif;font-weight:600;fill:var(--ink);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
@@ -44,7 +44,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"q" "m
 .zoom button{width:44px;height:44px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--ink);font:600 20px Inter,sans-serif;cursor:pointer}
 .legend{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--ink);display:flex;gap:6px 12px;flex-wrap:wrap;pointer-events:none;background:color-mix(in srgb,var(--bg) 85%,transparent);padding:4px 10px;border-radius:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px;border:1.5px solid}
-.legend .lk-ok{background:var(--ok);border-color:var(--okd)}.legend .lk-bad{background:var(--bad);border-color:var(--badd)}.legend .lk-part{background:color-mix(in srgb,var(--ok) 45%,var(--land));border-color:var(--okd)}.legend .lk-sel{background:var(--sel);border-color:var(--acc)}
+.legend .lk-ok{background:var(--ok);border-color:var(--okd)}.legend .lk-bad{background:var(--bad);border-color:var(--badd)}.legend .lk-part{background:color-mix(in srgb,var(--ok) 25%,var(--land));border-color:var(--okd)}.legend .lk-sel{background:var(--sel);border-color:var(--acc)}
 aside{grid-area:s;display:flex;flex-direction:column;gap:14px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px}
 .card h2{font:700 21px/1.2 Archivo,Inter,sans-serif;margin:0 0 4px}
@@ -59,7 +59,9 @@ select.ok{border-color:var(--okd);box-shadow:0 0 0 2px var(--okd) inset}select.b
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end;margin-top:8px}.form label{margin-top:0}.form .row{margin:0;flex-wrap:nowrap}
 .qh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}.qh h2{margin:0}.qh .sub{margin:0}
-.fbrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:10px}.fbrow .fb{margin:0;flex:1 1 260px}
+.fbrow{display:flex;flex-direction:column;gap:10px;margin-top:12px}.fbrow .fb{margin:0;line-height:1.45}
+.fbrow .row{margin:0;flex-wrap:nowrap}.fbrow .row .btn{flex:1 1 0;white-space:nowrap;justify-content:center}
+.fb.bad{border:1px solid var(--badd)}.fb.ok{border:1px solid var(--okd)}
 .big{font:800 26px/1.15 Archivo,Inter,sans-serif;margin:2px 0 6px;text-wrap:balance}
 .pl{color:var(--mute);font-size:15px}
 .fb{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:15px}
@@ -76,6 +78,7 @@ select.ok{border-color:var(--okd);box-shadow:0 0 0 2px var(--okd) inset}select.b
 .tog{display:flex;align-items:center;gap:8px;font-size:15px;margin:0;font-weight:500;cursor:pointer;min-height:36px}
 .tog input{width:20px;height:20px;accent-color:var(--pri)}
 .btn.sm{min-height:38px;font-size:14px;padding:0 12px}
+.btn.spk{display:inline-flex;align-items:center;gap:8px;color:var(--acc)}.btn.spk.on{border-color:var(--acc);background:var(--sel);color:var(--ink)}
 .btn.danger{color:var(--badd)}@media(hover:hover){.btn.danger:hover{border-color:var(--badd)}}
 .btn.dangerf{background:var(--badd);border-color:var(--badd);color:light-dark(#fff,#1a0d0f)}
 .confirm{margin-top:12px;padding:12px;border-radius:10px;border:1px solid var(--badd);font-size:14px}.confirm .row{margin-top:10px}
@@ -91,5 +94,4 @@ select.ok{border-color:var(--okd);box-shadow:0 0 0 2px var(--okd) inset}select.b
 main{grid-template-columns:minmax(0,1fr) clamp(320px,28vw,400px);grid-template-areas:"m q" "m s";grid-template-rows:auto 1fr}
 .mapbox{height:calc(100dvh - 110px);min-height:480px;max-height:none}
 .form{grid-template-columns:minmax(0,1fr)}.form .row .btn{flex:1}
-.fbrow .btn{flex:1}
 }

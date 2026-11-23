@@ -94,13 +94,15 @@ svg.addEventListener('pointerleave',()=>{if(mode==='explore'&&!locked)renderExpl
 new ResizeObserver(applyVB).observe(svg);
 
 /* labels & marks */
+/* labels: on by default in the overview, off in quizzes (they would give the answer away); remembered per mode */
+const labelsOn={explore:true};
 let showAll=false, revealed=new Set();
 function drawLabels(){
   const ids=showAll?R.map(r=>r.id):[...revealed];
   gL.innerHTML=ids.map(id=>{const r=byId[id];return `<text class="lab" x="${r.lx}" y="${r.ly}">${r.name}</text>`+
     (showAll||mode!=='explore'?r.caps.map(c=>`<text class="lab cty" x="${c.x}" y="${c.y-9}" dy="-0.2em">${c.name.replace(/\s*\(.*\)/,'')}</text>`).join(''):'')}).join('');
 }
-document.getElementById('labels').onchange=e=>{showAll=e.target.checked;drawLabels()};
+document.getElementById('labels').onchange=e=>{showAll=labelsOn[mode]=e.target.checked;drawLabels()};
 function clearMarks(){R.forEach(r=>regEl(r.id).classList.remove('sel','ok','part','bad','now'))}
 /* map colours come from saved progress, so they survive a page refresh:
    2+ right in a row = learned (green), 1 right = learning (light green), last answer wrong = red */
@@ -140,9 +142,18 @@ $('resetYes').onclick=()=>{P={w:{},streak:{},last:{},ok:0,all:0};store.set(KEY,P
 
 /* speech */
 const canSay='speechSynthesis' in window;
-function say(t){if(!canSay)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=DATA.lang;u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
-const sayBtn=r=>canSay?`<button class="say" data-say="${T.say?T.say+' ':''}${r.local}. ${r.caps.map(c=>c.local).join(', ')}">🔊 ${T.sayLabel}</button>`:'';
-panel.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b)say(b.dataset.say)});
+/* pick a voice for the country's language explicitly; without one the browser may read with a wrong accent or stay silent */
+let voice=null;
+const findVoice=()=>{if(!canSay)return;const vs=speechSynthesis.getVoices(),l=DATA.lang.toLowerCase(),b=l.split('-')[0];
+  voice=vs.find(v=>v.lang.toLowerCase().replace('_','-')===l)||vs.find(v=>v.lang.toLowerCase().startsWith(b))||null};
+if(canSay){findVoice();speechSynthesis.addEventListener?.('voiceschanged',findVoice)}
+function say(t,btn){if(!canSay)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=DATA.lang;if(voice)u.voice=voice;u.rate=.9;
+  if(btn){btn.classList.add('on');u.onend=u.onerror=()=>btn.classList.remove('on')}
+  speechSynthesis.speak(u);
+  if(!voice&&btn&&speechSynthesis.getVoices().length){btn.title='У системі немає голосу для цієї мови — вимова може бути неточною'}}catch(e){}}
+const SPK='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>';
+const sayBtn=r=>canSay?`<button class="btn sm spk" data-say="${T.say?T.say+' ':''}${r.local}. ${r.caps.map(c=>c.local).join(', ')}">${SPK}${T.sayLabel}</button>`:'';
+panel.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b)say(b.dataset.say,b)});
 
 const capsList=r=>`<ul class="caps">${r.caps.map(c=>`<li><b>${c.name}</b> <span class="pl">${c.local}</span>${c.seat?`<br><small>резиденція: ${c.seat}</small>`:''}</li>`).join('')}</ul>`;
 const opts=(arr,ph)=>`<option value="">${ph}</option>`+arr.map(v=>`<option>${v}</option>`).join('');
@@ -150,7 +161,7 @@ const opts=(arr,ph)=>`<option value="">${ph}</option>`+arr.map(v=>`<option>${v}<
 /* modes */
 let mode='explore', locked=null, st={};
 function setMode(m){
-  mode=m; locked=null; st={}; revealed.clear(); paintProgress(); target(null);
+  mode=m; showAll=!!labelsOn[m]; $('labels').checked=showAll; locked=null; st={}; revealed.clear(); paintProgress(); target(null);
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
   ({explore:()=>renderExplore(null),guess:()=>renderGuess(pickWeighted()),find:nextFind,city:nextCity})[m]();
   drawLabels();
@@ -160,9 +171,9 @@ document.getElementById('tabs').onclick=e=>{const b=e.target.closest('button');i
 function hover(e){if(mode!=='explore'||locked)return;const t=e.target.closest&&e.target.closest('.reg');renderExplore(t?t.dataset.id:null)}
 function renderExplore(id){
   if(st.hov===id&&id)return; st.hov=id;
-  if(!id){panel.innerHTML=`<div class="qh"><h2>Огляд</h2><p class="sub">Наведи або натисни на ${T.unit}, щоб побачити назву і головне місто.</p></div><p class="note" style="margin-top:6px">Порада: увімкни «Підписи на мапі», роздивись назви, потім вимкни й перевір себе.</p>`;return}
+  if(!id){panel.innerHTML=`<div class="qh"><h2>Огляд</h2><p class="sub">Наведи або натисни на ${T.unit}, щоб побачити назву і головне місто.</p></div><p class="note" style="margin-top:6px">Порада: вимкни «Підписи на мапі» і перевір, чи пам’ятаєш назви. Біля назви є кнопка вимови.</p>`;return}
   const r=byId[id];
-  panel.innerHTML=`<div class="qh"><p class="big" style="margin:0">${r.name}</p><span class="pl">${r.local}</span></div><div class="qh" style="margin-top:4px"><span>Центр: ${r.caps.map(c=>`<b>${c.name}</b> <span class="pl">${c.local}</span>${c.seat?` <small class="pl">(${c.seat})</small>`:''}`).join(' · ')}</span>${sayBtn(r)}</div>`;
+  panel.innerHTML=`<div class="qh"><p class="big" style="margin:0">${r.name}</p><span class="pl">${r.local}</span></div><div class="qh" style="margin-top:4px"><span>Центр: ${r.caps.map(c=>`<b>${c.name}</b> <span class="pl">${c.local}</span>${c.seat?` <small class="pl">(${c.seat})</small>`:''}`).join(' · ')}</span></div><div class="row">${sayBtn(r)}</div>`;
 }
 
 function renderGuess(id){
@@ -182,7 +193,7 @@ function renderGuess(id){
     const okR=sR.value===r.name, okC=r.caps.some(c=>c.name===sC.value), ok=okR&&okC;
     sR.className=okR?'ok':'bad'; sC.className=okC?'ok':'bad'; sR.disabled=sC.disabled=true;
     record(id,ok); mark(id,ok?'ok':'bad',true); revealed.add(id); drawLabels();
-    document.getElementById('fb').innerHTML=`<div class="fbrow"><div class="fb ${ok?'ok':'bad'}">${ok?'Правильно!':'Не зовсім.'} <b>${r.name}</b> (${r.local}) — ${r.caps.map(c=>c.name).join(' / ')}</div>${sayBtn(r)}<button class="btn pri" id="nx">Далі</button></div>`;
+    document.getElementById('fb').innerHTML=`<div class="fbrow"><div class="fb ${ok?'ok':'bad'}">${ok?'Правильно!':'Не зовсім.'} <b>${r.name}</b> (${r.local}) — ${r.caps.map(c=>c.name).join(' / ')}</div><div class="row">${sayBtn(r)}<button class="btn pri" id="nx">Далі →</button></div></div>`;
     document.getElementById('btns').remove();
     document.getElementById('nx').onclick=()=>renderGuess(pickWeighted(id)); document.getElementById('nx').focus();
   };
@@ -203,7 +214,7 @@ function answerClick(id){
   if(st.answered)return; st.answered=true; const ok=id===st.cur, r=byId[st.cur];
   record(st.cur,ok);
   if(ok)mark(st.cur,'ok',true); else{mark(id,'bad',true);mark(st.cur,'ok',true)} revealed.add(st.cur); drawLabels();
-  document.getElementById('fb').innerHTML=`<div class="fbrow"><div class="fb ${ok?'ok':'bad'}">${ok?'Правильно!':`Ні, це ${byId[id].name} (червоним). Правильно — зеленим:`} <b>${r.name}</b> — ${r.caps.map(c=>c.name).join(' / ')}</div>${sayBtn(r)}<button class="btn pri" id="nx">Далі</button></div>`;
+  document.getElementById('fb').innerHTML=`<div class="fbrow"><div class="fb ${ok?'ok':'bad'}">${ok?'Правильно!':`Ні, це ${byId[id].name} (червоним). Правильно — зеленим:`} <b>${r.name}</b> — ${r.caps.map(c=>c.name).join(' / ')}</div><div class="row">${sayBtn(r)}<button class="btn pri" id="nx">Далі →</button></div></div>`;
   const nx=document.getElementById('nx'); nx.onclick=()=>mode==='find'?nextFind():nextCity(); nx.focus();
 }
 
