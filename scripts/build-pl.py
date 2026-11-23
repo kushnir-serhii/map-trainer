@@ -4,7 +4,8 @@ Usage (from the repo root):
     python scripts/build-pl.py
 Downloads the GeoJSON (ppatrzyk/polska-geojson) if it is not cached in scripts/.cache/.
 """
-import json, math, os, urllib.request
+import json, math, os, re, urllib.request
+capF=lambda s:re.sub(r'(^|-)(\w)',lambda m:m.group(1)+m.group(2).upper(),s)  # 'kujawsko-pomorskie' -> 'Kujawsko-Pomorskie'
 SRC = 'https://raw.githubusercontent.com/ppatrzyk/polska-geojson/master/wojewodztwa/wojewodztwa-min.geojson'
 CACHE = os.path.join(os.path.dirname(__file__), '.cache', 'wojewodztwa.geojson')
 if not os.path.exists(CACHE):
@@ -63,14 +64,51 @@ for f in d['features']:
     cl=[]
     for cua,cpl,lat,lon,seat in caps[rid]:
         x,y=P(lon,lat);cl.append({'ua':cua,'pl':cpl,'x':round(x,1),'y':round(y,1),'seat':seat})
-    cl=[{'name':c['ua'],'local':c['pl'],'x':c['x'],'y':c['y'],'seat':c['seat']} for c in cl]
-    out.append({'id':rid,'name':ua,'local':pl,'caps':cl,'lx':round(cx+nx,1),'ly':round(cy+ny,1),'d':path})
+    cl=[{'name':{'uk':c['ua'],'pl':c['pl']},'local':c['pl'],'x':c['x'],'y':c['y'],'seat':c['seat']} for c in cl]
+    out.append({'id':rid,'name':{'uk':ua,'pl':capF(pl)},'local':pl,'caps':cl,'lx':round(cx+nx,1),'ly':round(cy+ny,1),'d':path})
 data={'id':'pl','name':{'uk':'Польща','pl':'Polska'},'lang':'pl-PL','w':1000,'h':round(H,1),'say':'województwo',
+ 'coa':'data/herby/pl/',  # coats of arms: <coa><region id>.svg, see fetch-herby-pl.py
  # UI wording per interface language; seat keys ('voivode'/'sejmik') are translated via 'seats'
- 'text':{'uk':{'title':'Воєводства Польщі','unit':'воєводство','Unit':'Воєводство','center':'Головне місто',
-               'sayLabel':'Вимова польською','seats':{'voivode':'воєвода','sejmik':'сеймик'}},
-         'pl':{'title':'Województwa Polski','unit':'województwo','Unit':'Województwo','center':'Stolica',
-               'sayLabel':'Wymowa','seats':{'voivode':'wojewoda','sejmik':'sejmik'}}},
+ 'text':{
+  "uk": {
+   "title": "Воєводства Польщі",
+   "Unit": "Воєводство",
+   "center": "Головне місто",
+   "sayLabel": "Вимова польською",
+   "seats": {
+    "voivode": "воєвода",
+    "sejmik": "сеймик"
+   },
+   "tabGuess": "Назви воєводство",
+   "tabCity": "Місто → воєводство",
+   "exploreSub": "Наведи або натисни на воєводство, щоб побачити назву і головне місто.",
+   "guessSub": "Натисни на воєводство на мапі або візьми випадкове.",
+   "random": "Випадкове воєводство",
+   "guessQ": "Що це за виділене воєводство?",
+   "findQ": "Знайди на мапі воєводство:",
+   "cityQ": "Синя точка — місто. Натисни на воєводство, центром якого воно є:",
+   "hint": "Воєводство вважається вивченим після 2 правильних відповідей поспіль."
+  },
+  "pl": {
+   "title": "Województwa Polski",
+   "Unit": "Województwo",
+   "center": "Stolica",
+   "sayLabel": "Wymowa",
+   "seats": {
+    "voivode": "wojewoda",
+    "sejmik": "sejmik"
+   },
+   "tabGuess": "Nazwij województwo",
+   "tabCity": "Miasto → województwo",
+   "exploreSub": "Najedź kursorem na województwo lub je kliknij, aby zobaczyć nazwę i stolicę.",
+   "guessSub": "Kliknij województwo na mapie albo wylosuj.",
+   "random": "Losowe województwo",
+   "guessQ": "Które województwo jest zaznaczone?",
+   "findQ": "Znajdź na mapie województwo:",
+   "cityQ": "Niebieska kropka to miasto. Kliknij województwo, którego jest stolicą:",
+   "hint": "Województwo uznaje się za opanowane po 2 poprawnych odpowiedziach z rzędu."
+  }
+ },
  'regions':out}
 dst=os.path.join(os.path.dirname(__file__),'..','data','pl.json')
 open(dst,'w',encoding='utf-8').write(json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('},{"id"','},\n{"id"'))

@@ -1,13 +1,4 @@
 [
-  {
-    "id": "pl",
-    "name": {
-      "pl": "Polska",
-      "uk": "Польща"
-    },
-    "flag": [
-      "#ffffff",
-      "#dc143c"
-    ]
-  }
+  {"id": "pl", "name": {"pl": "Polska", "uk": "Польща"}, "flag": ["#ffffff", "#dc143c"]},
+  {"id": "ua", "name": {"pl": "Ukraina", "uk": "Україна"}, "flag": ["#0057b7", "#ffd700"]}
 ]
